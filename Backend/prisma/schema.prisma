@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String              @id @default(uuid())
+  name               String
+  email              String              @unique
+  studentId          String?             @unique
+  password           String
+  role               Role                @default(STUDENT)
+  walletBalance      Float               @default(0)
+  walletTransactions WalletTransaction[]
+  createdAt          DateTime            @default(now())
+
+  bookings Booking[]
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  userId    String?
+  studentId String?
+  weight    Float
+  batchId   String?
+  status    BookingStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+
+  user   User?   @relation(fields: [userId], references: [id])
+  cycles Cycle[]
+}
+
+model Machine {
+  id        String      @id @default(uuid())
+  type      MachineType
+  building  String?
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+
+  cycles Cycle[]
+}
+
+model Cycle {
+  id        String      @id @default(uuid())
+  bookingId String
+  machineId String?
+  weight    Float
+  startTime DateTime?
+  endTime   DateTime?
+  status    CycleStatus @default(ACTIVE)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  booking Booking  @relation(fields: [bookingId], references: [id])
+  machine Machine? @relation(fields: [machineId], references: [id])
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model WalletTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Float
+  type      TransactionType
+  note      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  STUDENT
+  STAFF
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  SCHEDULED
+  PROCESSING
+  COMPLETED
+}
+
+enum CycleStatus {
+  ACTIVE
+  COMPLETED
+}
+
+enum MachineType {
+  WASHER
+  DRYER
+}
+
+enum TransactionType {
+  TOPUP
+  BOOKING_PAYMENT
+  REFUND
+  ADJUSTMENT
+}

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LaundryOps — Admin Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --green:#1D9E75;
+  --green-dark:#0F6E56;
+  --green-light:#E1F5EE;
+
+  --blue:#378ADD;
+  --blue-light:#E6F1FB;
+
+  --amber:#BA7517;
+  --amber-light:#FAEEDA;
+
+  --purple:#534AB7;
+  --purple-light:#EEEDFE;
+
+  --red:#D85A30;
+  --red-light:#FAECE7;
+
+  --gray:#888780;
+  --gray-light:#F1EFE8;
+
+  --bg:#F4F6F3;
+  --surface:#FFFFFF;
+  --surface-2:#F7F8F6;
+
+  --text:#1A1A18;
+  --text-2:#5A5A56;
+  --text-3:#9A9A94;
+
+  --border:rgba(0,0,0,.08);
+
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+
+  --shadow-sm:0 2px 8px rgba(0,0,0,.05);
+  --shadow-md:0 8px 18px rgba(0,0,0,.06);
+
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+
+body{
+  background:var(--bg);
+  font-family:var(--font);
+  color:var(--text);
+}
+
+.wrap{
+  max-width:1400px;
+  margin:auto;
+  padding:24px;
+}
+
+/* topbar */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:22px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand-icon{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:var(--green);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.brand h1{
+  font-size:18px;
+  font-weight:700;
+}
+
+.brand p{
+  font-size:12px;
+  color:var(--text-3);
+}
+
+.top-right{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.chip{
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:8px 14px;
+  border-radius:12px;
+  font-size:12px;
+  color:var(--text-2);
+}
+
+.admin{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:6px 12px 6px 6px;
+  border-radius:12px;
+}
+
+.avatar{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:var(--green);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  font-weight:700;
+}
+
+/* metrics */
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:14px;
+  margin-bottom:22px;
+}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:var(--shadow-sm);
+}
+
+.metric-title{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--text-3);
+  margin-bottom:8px;
+}
+
+.metric-value{
+  font-size:30px;
+  font-family:var(--mono);
+  font-weight:700;
+}
+
+.metric-sub{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--text-3);
+}
+
+/* layout */
+.grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:18px;
+}
+
+.left,
+.right{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+/* panel */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+
+.panel-head{
+  padding:16px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.panel-title{
+  font-size:14px;
+  font-weight:700;
+}
+
+.panel-body{
+  padding:18px;
+}
+
+/* bars */
+.bar{
+  margin-bottom:14px;
+}
+
+.bar-top{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  font-size:13px;
+}
+
+.track{
+  height:10px;
+  background:var(--surface-2);
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.fill{
+  height:100%;
+  border-radius:20px;
+}
+
+.green{background:var(--green);}
+.blue{background:var(--blue);}
+.purple{background:var(--purple);}
+.amber{background:var(--amber);}
+
+/* table */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  text-align:left;
+  padding:12px 8px;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+
+th{
+  color:var(--text-3);
+  font-size:11px;
+  text-transform:uppercase;
+}
+
+.badge{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:600;
+}
+
+.badge-green{
+  background:var(--green-light);
+  color:var(--green-dark);
+}
+
+.badge-blue{
+  background:var(--blue-light);
+  color:var(--blue);
+}
+
+.badge-gray{
+  background:var(--gray-light);
+  color:var(--gray);
+}
+
+/* actions */
+.btn{
+  width:100%;
+  padding:11px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+  margin-bottom:10px;
+}
+
+.btn-green{
+  background:var(--green);
+  color:#fff;
+}
+
+.btn-light{
+  background:var(--surface-2);
+}
+
+/* responsive */
+@media(max-width:1100px){
+  .metrics{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:700px){
+  .metrics{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<!-- topbar -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon">♲</div>
+    <div>
+      <h1>LaundryOps</h1>
+      <p>Administrative Console</p>
+    </div>
+  </div>
+
+  <div class="top-right">
+    <div class="chip" id="clock">--:--</div>
+    <div class="admin">
+      <div class="avatar">AD</div>
+      <span>Campus Admin</span>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- metrics -->
+<div class="metrics">
+  <div class="card">
+    <div class="metric-title">Total Bookings</div>
+    <div class="metric-value" id="total">0</div>
+    <div class="metric-sub">Today</div>
+  </div>
+
+  <div class="card">
+    <div class="metric-title">Active Loads</div>
+    <div class="metric-value" id="active">0</div>
+    <div class="metric-sub">Running now</div>
+  </div>
+
+  <div class="card">
+    <div class="metric-title">Completed</div>
+    <div class="metric-value" id="completed">0</div>
+    <div class="metric-sub">Finished today</div>
+  </div>
+
+  <div class="card">
+    <div class="metric-title">Walk-ins</div>
+    <div class="metric-value" id="walkins">0</div>
+    <div class="metric-sub">Manual desk bookings</div>
+  </div>
+
+  <div class="card">
+    <div class="metric-title">Building 36</div>
+    <div class="metric-value" id="b36">0</div>
+    <div class="metric-sub">Machine capacity</div>
+  </div>
+
+  <div class="card">
+    <div class="metric-title">Building 39</div>
+    <div class="metric-value" id="b39">0</div>
+    <div class="metric-sub">Machine capacity</div>
+  </div>
+</div>
+
+<!-- main -->
+<div class="grid">
+
+<div class="left">
+
+<!-- Building Performance -->
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-title">Campus Building Performance</div>
+  </div>
+
+  <div class="panel-body">
+    <div class="bar">
+      <div class="bar-top">
+        <span>Building 36 Utilization</span>
+        <span id="u36">0%</span>
+      </div>
+      <div class="track">
+        <div class="fill blue" id="bar36" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <div class="bar-top">
+        <span>Building 39 Utilization</span>
+        <span id="u39">0%</span>
+      </div>
+      <div class="track">
+        <div class="fill purple" id="bar39" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <div class="bar-top">
+        <span>System Completion Rate</span>
+        <span id="rate">0%</span>
+      </div>
+      <div class="track">
+        <div class="fill green" id="barRate" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-title">Recent Booking Activity</div>
+  </div>
+
+  <div class="panel-body">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Weight</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="activity">
+        <tr><td colspan="3">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<div class="right">
+
+<!-- System Health -->
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-title">System Health</div>
+  </div>
+
+  <div class="panel-body">
+    <div class="bar">
+      <div class="bar-top">
+        <span>Machines Online</span>
+        <span>100%</span>
+      </div>
+      <div class="track">
+        <div class="fill green" style="width:100%"></div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <div class="bar-top">
+        <span>Queue Pressure</span>
+        <span id="pressure">0%</span>
+      </div>
+      <div class="track">
+        <div class="fill amber" id="pressureBar" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-title">Administrative Actions</div>
+  </div>
+
+  <div class="panel-body">
+    <button class="btn btn-green" onclick="loadStats()">Refresh Dashboard</button>
+    <button class="btn btn-light">Export Daily Report</button>
+    <button class="btn btn-light">Review Walk-ins</button>
+  </div>
+</div>
+
+<!-- for sending announcements-->
+
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-title">
+      Broadcast Announcement
+    </div>
+  </div>
+
+  <div class="panel-body">
+    <input id="title"
+      placeholder="Title"
+      style="width:100%;padding:10px;margin-bottom:10px;border-radius:10px;border:1px solid #ddd;">
+
+    <textarea id="message"
+      placeholder="Write update..."
+      style="width:100%;padding:10px;height:100px;border-radius:10px;border:1px solid #ddd;"></textarea>
+
+    <button class="btn btn-green"
+      onclick="sendAnnouncement()"
+      style="margin-top:10px;">
+      Send Update
+    </button>
+  </div>
+</div>
+
+
+<!-- Alerts -->
+<div class="panel">
+  <div class="panel-head">
+    <div class="panel-title">Operational Alerts</div>
+  </div>
+
+  <div class="panel-body" id="alerts">
+    No alerts at this time.
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+function tick(){
+  document.getElementById("clock").textContent =
+    new Date().toLocaleTimeString([],{
+      hour:'2-digit',
+      minute:'2-digit'
+    });
+}
+tick();
+setInterval(tick,1000);
+
+async function loadStats(){
+  try{
+    const res = await fetch("http://localhost:5000/api/admin/stats");
+    const data = await res.json();
+
+    document.getElementById("total").textContent = data.totalBookings || 0;
+    document.getElementById("active").textContent = data.active || 0;
+    document.getElementById("completed").textContent = data.completed || 0;
+    document.getElementById("walkins").textContent = data.walkins || 0;
+    document.getElementById("b36").textContent = data.building36 || 0;
+    document.getElementById("b39").textContent = data.building39 || 0;
+
+    const totalBuildings = (data.building36 + data.building39) || 1;
+
+    const u36 = Math.round((data.building36 / totalBuildings) * 100);
+    const u39 = Math.round((data.building39 / totalBuildings) * 100);
+
+    document.getElementById("u36").textContent = u36 + "%";
+    document.getElementById("u39").textContent = u39 + "%";
+
+    document.getElementById("bar36").style.width = u36 + "%";
+    document.getElementById("bar39").style.width = u39 + "%";
+
+    const completionRate = Math.round(
+      (data.completed / (data.totalBookings || 1)) * 100
+    );
+
+    document.getElementById("rate").textContent =
+      completionRate + "%";
+
+    document.getElementById("barRate").style.width =
+      completionRate + "%";
+
+    const pressure = Math.min(
+      Math.round((data.active / 20) * 100),100
+    );
+
+    document.getElementById("pressure").textContent =
+      pressure + "%";
+
+    document.getElementById("pressureBar").style.width =
+      pressure + "%";
+
+    if(pressure > 80){
+      document.getElementById("alerts").innerHTML =
+        "⚠ High queue pressure detected. Consider opening overflow machines.";
+    }else{
+      document.getElementById("alerts").innerHTML =
+        "No alerts at this time.";
+    }
+
+    loadActivity();
+
+  }catch(err){
+    console.error(err);
+  }
+}
+async function sendAnnouncement(){
+
+  const title =
+    document.getElementById("title").value;
+
+  const message =
+    document.getElementById("message").value;
+
+  await fetch(
+    "http://localhost:5000/api/admin/announce",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        title,
+        message
+      })
+    }
+  );
+
+  alert("✅ Update Sent");
+
+  document.getElementById("title").value = "";
+  document.getElementById("message").value = "";
+}
+async function loadActivity(){
+  const table = document.getElementById("activity");
+
+  table.innerHTML = `
+    <tr>
+      <td>220145</td>
+      <td>5kg</td>
+      <td><span class="badge badge-green">Completed</span></td>
+    </tr>
+    <tr>
+      <td>220210</td>
+      <td>4kg</td>
+      <td><span class="badge badge-blue">Active</span></td>
+    </tr>
+    <tr>
+      <td>Walk-in</td>
+      <td>6kg</td>
+      <td><span class="badge badge-gray">Pending</span></td>
+    </tr>
+  `;
+}
+
+loadStats();
+setInterval(loadStats,15000);
+</script>
+
+</body>
+</html>

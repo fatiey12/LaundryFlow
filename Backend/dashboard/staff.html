@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LaundryOps — Staff Dashboard</title>
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:        #1D9E75;
+    --green-light:  #E1F5EE;
+    --green-dark:   #0F6E56;
+    --amber:        #BA7517;
+    --amber-light:  #FAEEDA;
+    --blue:         #378ADD;
+    --blue-light:   #E6F1FB;
+    --blue-dark:    #185FA5;
+    --purple:       #534AB7;
+    --purple-light: #EEEDFE;
+    --gray:         #888780;
+    --gray-light:   #F1EFE8;
+    --gray-dark:    #5F5E5A;
+    --red:          #D85A30;
+    --red-light:    #FAECE7;
+
+    --bg:         #F4F6F3;
+    --surface:    #FFFFFF;
+    --surface-2:  #F7F8F6;
+    --border:     rgba(0,0,0,0.08);
+    --border-med: rgba(0,0,0,0.13);
+    --text:       #1A1A18;
+    --text-2:     #5A5A56;
+    --text-3:     #9A9A94;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+
+    --font:      'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html, body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .dash { padding: 1.5rem; max-width: 1280px; margin: 0 auto; }
+
+  /* ── Topbar ──────────────────────────────── */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 38px; height: 38px; background: var(--green);
+    border-radius: var(--radius-md); display: flex; align-items: center;
+    justify-content: center; color: white; font-size: 20px; flex-shrink: 0;
+  }
+  .logo h1 { font-size: 17px; font-weight: 600; color: var(--text); }
+  .logo p  { font-size: 12px; color: var(--text-3); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .chip {
+    font-size: 12px; color: var(--text-2);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 6px 14px;
+    font-family: var(--font-mono);
+  }
+  .staff-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 5px 12px 5px 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--green); color: white;
+    font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .staff-chip span { font-size: 13px; font-weight: 500; color: var(--text); }
+
+  /* ── Metrics ─────────────────────────────── */
+  .metrics {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-bottom: 1.5rem;
+  }
+  .metric {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem 1rem;
+    position: relative; overflow: hidden; box-shadow: var(--shadow-sm);
+    transition: box-shadow .2s, transform .2s;
+  }
+  .metric:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .metric-accent {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .m-green .metric-accent { background: var(--green); }
+  .m-amber .metric-accent { background: var(--amber); }
+  .m-blue  .metric-accent { background: var(--blue); }
+  .m-gray  .metric-accent { background: var(--gray); }
+  .metric-label { font-size: 11px; color: var(--text-3); font-weight: 500; letter-spacing: .4px; text-transform: uppercase; margin-bottom: 6px; }
+  .metric-val   { font-size: 32px; font-weight: 600; color: var(--text); line-height: 1; font-family: var(--font-mono); }
+  .metric-sub   { font-size: 11px; color: var(--text-3); margin-top: 5px; }
+  .metric-badge {
+    position: absolute; top: 1.1rem; right: 1.25rem;
+    font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px;
+  }
+  .badge-green { background: var(--green-light); color: var(--green-dark); }
+  .badge-gray  { background: var(--gray-light);  color: var(--gray-dark); }
+  .badge-blue  { background: var(--blue-light);  color: var(--blue-dark); }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+
+  /* ── 2-col layout ────────────────────────── */
+  .main { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
+  .left  { display: flex; flex-direction: column; gap: 1.25rem; }
+  .right { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  /* ── Panel ───────────────────────────────── */
+  .panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .85rem 1.25rem; border-bottom: 1px solid var(--border);
+  }
+  .panel-title { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .status-dot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green   { background: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+  .dot-gray    { background: var(--gray);  box-shadow: 0 0 0 3px var(--gray-light); }
+  .panel-count { font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 20px; font-family: var(--font-mono); }
+  .count-green { background: var(--green-light); color: var(--green-dark); }
+  .count-gray  { background: var(--gray-light);  color: var(--gray-dark); }
+
+  /* ── Order rows ──────────────────────────── */
+  .order-list { max-height: 380px; overflow-y: auto; padding: 4px 0; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-med); border-radius: 4px; }
+
+  .order-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: .75rem 1.25rem; border-bottom: 1px solid var(--border);
+    transition: background .12s;
+  }
+  .order-row:last-child { border-bottom: none; }
+  .order-row:hover { background: var(--surface-2); }
+
+  .order-id { font-size: 11px; font-weight: 500; color: var(--text-3); font-family: var(--font-mono); min-width: 58px; flex-shrink: 0; }
+  .order-info { flex: 1; min-width: 0; }
+  .order-name { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .order-meta { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  .order-weight { font-size: 12px; font-weight: 500; color: var(--text-2); font-family: var(--font-mono); min-width: 40px; text-align: right; flex-shrink: 0; }
+
+  .pill { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .pill-active { background: var(--green-light); color: var(--green-dark); }
+  .pill-done   { background: var(--gray-light);  color: var(--gray-dark); }
+  .pill-walkin { background: var(--blue-light);  color: var(--blue-dark); }
+
+  .bldg { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; letter-spacing: .3px; flex-shrink: 0; }
+  .bldg-b36 { background: var(--blue-light);   color: var(--blue-dark); }
+  .bldg-b39 { background: var(--purple-light); color: var(--purple); }
+
+  .done-btn {
+    font-size: 11px; font-weight: 600; padding: 5px 13px;
+    border-radius: var(--radius-sm); border: 1px solid var(--green);
+    background: transparent; color: var(--green-dark);
+    cursor: pointer; font-family: var(--font);
+    transition: background .15s, color .15s; white-space: nowrap; flex-shrink: 0;
+  }
+  .done-btn:hover  { background: var(--green); color: white; }
+  .done-btn:active { transform: scale(.98); }
+
+  .empty { padding: 2.5rem; text-align: center; color: var(--text-3); font-size: 13px; }
+
+  /* ── Walk-in panel ───────────────────────── */
+  .walkin-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .walkin-head { display: flex; align-items: center; gap: 9px; padding: .85rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .add-icon {
+    width: 24px; height: 24px; border-radius: var(--radius-sm);
+    background: var(--green); color: white; font-size: 17px; line-height: 1;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .walkin-head h2 { font-size: 13px; font-weight: 600; color: var(--text); }
+  .walkin-body { padding: 1.1rem 1.25rem; }
+
+  .field { margin-bottom: .9rem; }
+  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .field input,
+  .field select {
+    width: 100%; padding: 9px 12px;
+    border: 1px solid var(--border-med); border-radius: var(--radius-md);
+    font-size: 13px; background: var(--surface); color: var(--text);
+    outline: none; font-family: var(--font);
+    transition: border-color .15s, box-shadow .15s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .field input:focus,
+  .field select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+  .field input::placeholder { color: var(--text-3); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .submit-btn {
+    width: 100%; padding: 10px; margin-top: .2rem;
+    background: var(--green); color: white; border: none;
+    border-radius: var(--radius-md); font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: var(--font);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: background .15s, transform .1s; letter-spacing: .2px;
+  }
+  .submit-btn:hover  { background: var(--green-dark); }
+  .submit-btn:active { transform: scale(.99); }
+
+  /* walkinMsg: hidden by default, shown via JS */
+  #walkinMsg {
+    margin-top: .75rem; font-size: 12px; font-weight: 500;
+    padding: 8px 12px; border-radius: var(--radius-md); display: none;
+  }
+  #walkinMsg.success { background: var(--green-light); color: var(--green-dark); }
+  #walkinMsg.error   { background: var(--red-light);   color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="dash">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">&#9832;</div>
+      <div>
+        <h1>LaundryOps</h1>
+        <p>Staff dashboard</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="chip" id="clock">--:-- --</div>
+      <div class="staff-chip">
+        <div class="avatar">FZ</div>
+        <span>Fatima Z.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics">
+    <div class="metric m-green">
+      <div class="metric-accent"></div>
+      <div class="metric-label">Active orders</div>
+      <div class="metric-val" id="m-active">0</div>
+      <div class="metric-sub">In machines now</div>
+      <span class="metric-badge badge-green">Live</span>
+    </div>
+    <div class="metric m-gray">
+      <div class="metric-accent"></div>
+      <div class="metric-label">Completed today</div>
+      <div class="metric-val" id="m-done">0</div>
+      <div class="metric-sub">Finished</div>
+      <span class="metric-badge badge-gray">Done</span>
+    </div>
+    <div class="metric m-blue">
+      <div class="metric-accent"></div>
+      <div class="metric-label">Total bookings</div>
+      <div class="metric-val" id="m-total">0</div>
+      <div class="metric-sub">Today</div>
+      <span class="metric-badge badge-blue">Today</span>
+    </div>
+    <div class="metric m-amber">
+      <div class="metric-accent"></div>
+      <div class="metric-label">Weight processed</div>
+      <div class="metric-val" id="m-kg">0</div>
+      <div class="metric-sub">Kilograms today</div>
+      <span class="metric-badge badge-amber">kg</span>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <div class="left">
+
+      <!-- Active orders -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="status-dot dot-green"></span>
+            Active orders
+          </div>
+          <span class="panel-count count-green" id="count-active">0</span>
+        </div>
+        <div class="order-list" id="active">
+          <div class="empty">No active orders</div>
+        </div>
+      </div>
+
+      <!-- Completed orders -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="status-dot dot-gray"></span>
+            Completed
+          </div>
+          <span class="panel-count count-gray" id="count-completed">0</span>
+        </div>
+        <div class="order-list" id="completed">
+          <div class="empty">No completed orders yet</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Walk-in form -->
+    <div class="right">
+      <div class="walkin-panel">
+        <div class="walkin-head">
+          <div class="add-icon">+</div>
+          <h2>Walk-in booking</h2>
+        </div>
+        <div class="walkin-body">
+
+          <div class="field">
+            <label>Student ID</label>
+            <input id="studentId" placeholder="e.g. 220145" />
+          </div>
+
+          <div class="field">
+            <label>Weight (kg)</label>
+            <input id="weight" type="number" placeholder="e.g. 5" min="0.5" max="30" step="0.5"/>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Building</label>
+              <select id="building">
+                <option value="B36">Building 36</option>
+                <option value="B39">Building 39</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Machine</label>
+              <select id="machine">
+                <option value="W1">Washer 1</option>
+                <option value="W2">Washer 2</option>
+                <option value="D1">Dryer 1</option>
+                <option value="D2">Dryer 2</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="createWalkIn()">
+            <span style="font-size:16px;line-height:1">+</span> Add booking
+          </button>
+
+          <p id="walkinMsg"></p>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Clock -->
+<script>
+  function tick() {
+    const el = document.getElementById('clock');
+    if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+<!-- App -->
+<script>
+
+  /* ── Helpers ───────────────────────────── */
+
+  function formatTime(time) {
+    if (!time) return "N/A";
+    return new Date(time).toLocaleTimeString();
+  }
+
+  function getStudentId(cycle) {
+    return cycle.booking?.studentId
+        || cycle.booking?.user?.studentId
+        || cycle.booking?.user?.email
+        || "N/A";
+  }
+
+  function getBuilding(cycle) {
+    return cycle.machine?.building || "";
+  }
+
+  function bldgTag(building) {
+    if (building === "36") return `<span class="bldg bldg-b36">B36</span>`;
+    if (building === "39") return `<span class="bldg bldg-b39">B39</span>`;
+    return building ? `<span class="bldg bldg-b36">${building}</span>` : "";
+  }
+
+  function showMsg(text, type) {
+    const msg = document.getElementById("walkinMsg");
+    msg.textContent  = text;
+    msg.className    = type;           // "success" or "error"
+    msg.style.display = "block";
+    setTimeout(() => { msg.style.display = "none"; }, 3000);
+  }
+
+  /* ── Metric counters ───────────────────── */
+
+  function updateMetrics(active, completed, total, kg) {
+    document.getElementById("m-active").textContent        = active;
+    document.getElementById("m-done").textContent          = completed;
+    document.getElementById("m-total").textContent         = total;
+    document.getElementById("m-kg").textContent            = kg;
+    document.getElementById("count-active").textContent    = active;
+    document.getElementById("count-completed").textContent = completed;
+  }
+
+  /* ── Render active (grouped by batch) ─── */
+
+  function renderGrouped(grouped) {
+    const container = document.getElementById("active");
+    container.innerHTML = "";
+
+    if (!grouped || Object.keys(grouped).length === 0) {
+      container.innerHTML = '<div class="empty">No active orders</div>';
+      return 0;
+    }
+
+    let count = 0;
+
+    for (const batch in grouped) {
+      grouped[batch].forEach((cycle) => {
+        count++;
+        const row = document.createElement("div");
+        row.className = "order-row";
+        row.innerHTML = `
+          <span class="order-id">#${String(cycle.id).slice(-5)}</span>
+          <div class="order-info">
+            <div class="order-name">
+              ${getStudentId(cycle)}
+              <span class="pill pill-walkin">Batch ${batch}</span>
+            </div>
+            <div class="order-meta">
+              ${cycle.weight}kg &middot; ${cycle.machine?.type || "N/A"} &middot;
+              ${bldgTag(getBuilding(cycle))} &middot; Started: ${formatTime(cycle.startTime)}
+            </div>
+          </div>
+          <span class="order-weight">${cycle.weight}kg</span>
+          <span class="pill pill-active">Active</span>
+          <button class="done-btn" onclick="markDone('${cycle.id}')">Mark done</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    return count;
+  }
+
+  /* ── Render completed ──────────────────── */
+
+  function renderCompleted(cycles) {
+    const container = document.getElementById("completed");
+    container.innerHTML = "";
+
+    if (!cycles || cycles.length === 0) {
+      container.innerHTML = '<div class="empty">No completed orders yet</div>';
+      return 0;
+    }
+
+    cycles.forEach((cycle) => {
+      const row = document.createElement("div");
+      row.className = "order-row";
+      row.innerHTML = `
+        <span class="order-id">#${String(cycle.id).slice(-5)}</span>
+        <div class="order-info">
+          <div class="order-name">${getStudentId(cycle)}</div>
+          <div class="order-meta">
+            ${cycle.weight}kg &middot; ${cycle.machine?.type || "N/A"} &middot;
+            ${bldgTag(getBuilding(cycle))} &middot; Done: ${formatTime(cycle.endTime)}
+          </div>
+        </div>
+        <span class="order-weight">${cycle.weight}kg</span>
+        <span class="pill pill-done">Done</span>
+      `;
+      container.appendChild(row);
+    });
+
+    return cycles.length;
+  }
+
+  /* ── Master UI update ──────────────────── */
+
+  function updateUI(data) {
+    const activeCount    = renderGrouped(data.activeGrouped) || 0;
+    const completedCount = renderCompleted(data.completed)   || 0;
+    const total          = activeCount + completedCount;
+    const totalKg        = (data.completed || [])
+      .reduce((sum, c) => sum + (Number(c.weight) || 0), 0);
+
+    updateMetrics(activeCount, completedCount, total, Math.round(totalKg));
+  }
+
+  /* ── Walk-in booking ───────────────────── */
+
+  async function createWalkIn() {
+    const studentId = document.getElementById("studentId").value.trim();
+    const weight    = document.getElementById("weight").value.trim();
+    const building  = document.getElementById("building").value;
+    const machine   = document.getElementById("machine").value;
+
+    if (!studentId || !weight) {
+      showMsg("Please fill in Student ID and Weight.", "error");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/bookings/walkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId, weight: Number(weight), building, machine })
+      });
+
+      if (!res.ok) throw new Error("Server error");
+
+      showMsg("Walk-in booking added successfully.", "success");
+      document.getElementById("studentId").value = "";
+      document.getElementById("weight").value    = "";
+
+    } catch (err) {
+      showMsg("Error adding booking. Please try again.", "error");
+    }
+  }
+
+  /* ── Mark done ─────────────────────────── */
+
+  async function markDone(cycleId) {
+    try {
+      await fetch(`http://localhost:5000/api/cycles/${cycleId}/complete`, {
+        method: "PATCH"
+      });
+      // UI refreshes automatically via socket event below
+    } catch (err) {
+      console.error("Error completing cycle:", err);
+    }
+  }
+
+  /* ── Socket.IO ─────────────────────────── */
+
+  const socket = io("http://127.0.0.1:5000", { transports: ["websocket"] });
+
+  socket.on("staff-board-update", (data) => {
+    updateUI(data);
+  });
+
+  /* ── Initial load ──────────────────────── */
+
+  async function loadInitialData() {
+    try {
+      const res  = await fetch("http://localhost:5000/api/staff/board");
+      const data = await res.json();
+      updateUI(data);
+    } catch (err) {
+      console.error("Failed to load initial board data:", err);
+    }
+  }
+
+  loadInitialData();
+
+</script>
+</body>
+</html>
