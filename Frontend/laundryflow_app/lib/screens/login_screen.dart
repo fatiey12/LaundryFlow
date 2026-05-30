@@ -24,13 +24,13 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      // 🔥 CALL API (ApiService handles token internally)
+      // CALL API (ApiService handles token internally)
       await ApiService.login(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
-      // 🔥 NAVIGATE ON SUCCESS
+      // NAVIGATE ON SUCCESS
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } catch (e) {
       setState(() {
-        error = e.toString(); // 🔥 shows real backend error
+        error = e.toString(); // shows real backend error
       });
     }
 
@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
 
-          // 🔥 HEADER
+          // HEADER
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(20, 80, 20, 40),
@@ -83,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // 🔽 BODY
+          // BODY
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -143,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const Spacer(),
 
-                  // 🔁 NAVIGATION
+                  // NAVIGATION
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

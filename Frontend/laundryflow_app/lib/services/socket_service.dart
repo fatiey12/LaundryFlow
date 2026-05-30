@@ -16,17 +16,17 @@ class SocketService {
     socket!.connect();
 
     socket!.onConnect((_) {
-      print("✅ Connected to WebSocket");
+      print("Connected to WebSocket");
     });
 
     socket!.onDisconnect((_) {
-      print("❌ Disconnected");
+      print(" Disconnected");
     });
   }
 
   static void listen(void Function(dynamic data) onUpdate) {
     socket!.on("staff-board-update", (data) {
-      print("📡 Real-time update received");
+      print(" Real-time update received");
       onUpdate(data);
     });
   }

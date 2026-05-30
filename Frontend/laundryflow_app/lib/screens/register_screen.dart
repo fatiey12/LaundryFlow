@@ -53,7 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Column(
         children: [
 
-          // 🔥 HEADER
+          // HEADER
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(20, 80, 20, 40),
@@ -66,7 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Create Account ✨",
+                  "Create Account ",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 26,
@@ -82,7 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
 
-          // 🔽 BODY
+          // BODY
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(20),

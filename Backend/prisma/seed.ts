@@ -2,7 +2,7 @@ import prisma from "../src/config/prisma";
 import { MachineType } from "@prisma/client";
 
 async function main() {
-  console.log("🌱 Seeding machines...");
+  console.log("Seeding machines...");
 
   const machines = [];
 
@@ -36,7 +36,7 @@ async function main() {
     data: machines,
   });
 
-  console.log("✅ Machines seeded successfully");
+  console.log("Machines seeded successfully");
 }
 
 main()

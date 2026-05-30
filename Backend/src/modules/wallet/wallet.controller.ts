@@ -1,8 +1,8 @@
 import prisma from "../../config/prisma";
 
-// =========================
+
 // GET BALANCE
-// =========================
+
 export const getBalance = async (
   req: any,
   res: any
@@ -26,9 +26,9 @@ export const getBalance = async (
   }
 };
 
-// =========================
+
 // TOP UP
-// =========================
+
 export const topUpWallet = async (
   req: any,
   res: any
@@ -72,9 +72,9 @@ export const topUpWallet = async (
   }
 };
 
-// =========================
+
 // HISTORY
-// =========================
+
 export const getHistory = async (
   req: any,
   res: any

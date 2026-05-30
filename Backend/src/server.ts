@@ -13,15 +13,15 @@ export const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("⚡ Client connected:", socket.id);
+  console.log("Client connected:", socket.id);
 
   socket.on("disconnect", () => {
-    console.log("❌ Client disconnected:", socket.id);
+    console.log("Client disconnected:", socket.id);
   });
 });
 
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

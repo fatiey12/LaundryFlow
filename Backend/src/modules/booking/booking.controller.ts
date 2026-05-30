@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { createBooking } from "./booking.service";
 import prisma from "../../config/prisma";
 
-// CREATE BOOKING (supports BOTH app + walk-in)
+// CREATE BOOKING (supports BOTH the app + walk-in)
 export const createBookingHandler = async (
   req: Request,
   res: Response

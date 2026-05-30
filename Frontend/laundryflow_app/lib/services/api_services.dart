@@ -3,9 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  // =====================================
+  
   // CONFIG
-  // =====================================
+  
   static const String baseUrl =
       'http://10.0.2.2:5000/api';
 
@@ -28,9 +28,9 @@ class ApiService {
       _token != null &&
       _currentUser != null;
 
-  // =====================================
+  
   // SESSION
-  // =====================================
+  
 
   static Future<void>
       restoreSession() async {
@@ -101,9 +101,9 @@ class ApiService {
     return _token;
   }
 
-  // =====================================
+  
   // HEADERS
-  // =====================================
+  
 
   static Map<String, String> _headers({
     bool authenticated = false,
@@ -122,9 +122,9 @@ class ApiService {
     return headers;
   }
 
-  // =====================================
+  
   // ERROR HANDLING
-  // =====================================
+ 
 
   static Exception _buildError(
     http.Response response,
@@ -148,9 +148,9 @@ class ApiService {
     }
   }
 
-  // =====================================
+  
   // AUTH
-  // =====================================
+  
 
   static Future<Map<String, dynamic>>
       login({
@@ -238,9 +238,9 @@ class ApiService {
     return _currentUser!;
   }
 
-  // =====================================
+  
   // BOOKINGS
-  // =====================================
+ 
 
   static Future<dynamic>
       createBooking(
@@ -353,9 +353,9 @@ class ApiService {
     );
   }
 
-  // =====================================
+
   // WALLET
-  // =====================================
+ 
 
   static Future<Map<String, dynamic>>
       getWalletBalance() async {

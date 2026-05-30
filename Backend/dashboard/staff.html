@@ -59,7 +59,7 @@
 
   .dash { padding: 1.5rem; max-width: 1280px; margin: 0 auto; }
 
-  /* ── Topbar ──────────────────────────────── */
+  /* Topbar */
   .topbar {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 1.5rem;
@@ -93,7 +93,7 @@
   }
   .staff-chip span { font-size: 13px; font-weight: 500; color: var(--text); }
 
-  /* ── Metrics ─────────────────────────────── */
+  /* Metrics */
   .metrics {
     display: grid; grid-template-columns: repeat(4, 1fr);
     gap: 12px; margin-bottom: 1.5rem;
@@ -125,12 +125,12 @@
   .badge-blue  { background: var(--blue-light);  color: var(--blue-dark); }
   .badge-amber { background: var(--amber-light); color: var(--amber); }
 
-  /* ── 2-col layout ────────────────────────── */
+  /* 2-col layout */
   .main { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
   .left  { display: flex; flex-direction: column; gap: 1.25rem; }
   .right { display: flex; flex-direction: column; gap: 1.25rem; }
 
-  /* ── Panel ───────────────────────────────── */
+  /* Panel*/
   .panel {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
@@ -147,7 +147,7 @@
   .count-green { background: var(--green-light); color: var(--green-dark); }
   .count-gray  { background: var(--gray-light);  color: var(--gray-dark); }
 
-  /* ── Order rows ──────────────────────────── */
+  /* Order rows */
   .order-list { max-height: 380px; overflow-y: auto; padding: 4px 0; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -188,7 +188,7 @@
 
   .empty { padding: 2.5rem; text-align: center; color: var(--text-3); font-size: 13px; }
 
-  /* ── Walk-in panel ───────────────────────── */
+  /* Walk-in panel */
   .walkin-panel {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
@@ -391,7 +391,7 @@
 <!-- App -->
 <script>
 
-  /* ── Helpers ───────────────────────────── */
+  /*Helpers*/
 
   function formatTime(time) {
     if (!time) return "N/A";
@@ -423,7 +423,7 @@
     setTimeout(() => { msg.style.display = "none"; }, 3000);
   }
 
-  /* ── Metric counters ───────────────────── */
+  /* Metric counters */
 
   function updateMetrics(active, completed, total, kg) {
     document.getElementById("m-active").textContent        = active;
@@ -434,7 +434,7 @@
     document.getElementById("count-completed").textContent = completed;
   }
 
-  /* ── Render active (grouped by batch) ─── */
+  /* Render active (grouped by batch)  */
 
   function renderGrouped(grouped) {
     const container = document.getElementById("active");
@@ -475,7 +475,7 @@
     return count;
   }
 
-  /* ── Render completed ──────────────────── */
+  /* Render completed */
 
   function renderCompleted(cycles) {
     const container = document.getElementById("completed");
@@ -507,7 +507,7 @@
     return cycles.length;
   }
 
-  /* ── Master UI update ──────────────────── */
+  /* UI update ───*/
 
   function updateUI(data) {
     const activeCount    = renderGrouped(data.activeGrouped) || 0;
@@ -519,7 +519,7 @@
     updateMetrics(activeCount, completedCount, total, Math.round(totalKg));
   }
 
-  /* ── Walk-in booking ───────────────────── */
+  /* Walk-in booking */
 
   async function createWalkIn() {
     const studentId = document.getElementById("studentId").value.trim();
@@ -550,7 +550,7 @@
     }
   }
 
-  /* ── Mark done ─────────────────────────── */
+  /* Mark done */
 
   async function markDone(cycleId) {
     try {
@@ -563,7 +563,7 @@
     }
   }
 
-  /* ── Socket.IO ─────────────────────────── */
+  /* Socket.IO */
 
   const socket = io("http://127.0.0.1:5000", { transports: ["websocket"] });
 
@@ -571,7 +571,7 @@
     updateUI(data);
   });
 
-  /* ── Initial load ──────────────────────── */
+  /* the initial load */
 
   async function loadInitialData() {
     try {

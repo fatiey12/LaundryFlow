@@ -10,9 +10,9 @@ const PRICE_PER_CYCLE = 10;
 const AVG_WASH_TIME = 60;
 const AVG_DRY_TIME = 40;
 
-// =======================================
+
 // Choose less busy building
-// =======================================
+
 const getBestBuilding = async (): Promise<"36" | "39"> => {
   const cycles = await prisma.cycle.findMany({
     include: { machine: true },
@@ -29,17 +29,17 @@ const getBestBuilding = async (): Promise<"36" | "39"> => {
   return load36 <= load39 ? "36" : "39";
 };
 
-// =======================================
+
 // MAIN BOOKING
-// =======================================
+
 export async function createBooking(
   userId: string | null,
   weight: number,
   batchId?: string
 ) {
-  // ==========================
+  
   // COST LOGIC
-  // ==========================
+  
   const washerCycles = Math.ceil(weight / 7);
   const dryerCycles = 1;
 
@@ -49,9 +49,9 @@ export async function createBooking(
   const totalCost =
     totalCycles * PRICE_PER_CYCLE;
 
-  // ==========================
+  
   // CHECK WALLET (ONLY FOR REGISTERED USERS)
-  // ==========================
+  
   if (userId) {
     const user =
       await prisma.user.findUnique({
@@ -96,9 +96,9 @@ export async function createBooking(
     );
   }
 
-  // ==========================
+  
   // CREATE BOOKING
-  // ==========================
+  
   const booking =
     await prisma.booking.create({
       data: {
@@ -109,9 +109,9 @@ export async function createBooking(
       },
     });
 
-  // ==========================
+  
   // SPLIT WASH LOADS
-  // ==========================
+  
   const washLoads: number[] = [];
 
   let remaining = weight;
@@ -126,9 +126,9 @@ export async function createBooking(
     remaining -= load;
   }
 
-  // ==========================
+  
   // PREDICTION
-  // ==========================
+  
   const queueLength =
     await prisma.booking.count({
       where: {
@@ -144,9 +144,9 @@ export async function createBooking(
         new Date().getHours(),
     });
 
-  // ==========================
+  
   // MACHINE SELECTION
-  // ==========================
+  
   const bestBuilding =
     await getBestBuilding();
 
@@ -185,9 +185,9 @@ export async function createBooking(
     );
   }
 
-  // ==========================
+  
   // CREATE WASH CYCLES
-  // ==========================
+  
   let lastWashEnd =
     new Date();
 
@@ -223,9 +223,9 @@ export async function createBooking(
     lastWashEnd = end;
   }
 
-  // ==========================
+  
   // ONE DRYER CYCLE
-  // ==========================
+
   const dryer =
     dryers[0];
 
@@ -255,9 +255,9 @@ export async function createBooking(
     },
   });
 
-  // ==========================
+  
   // READY TIME
-  // ==========================
+  
   const estimatedReadyTime =
     dryEnd.toLocaleTimeString(
       [],
@@ -268,9 +268,9 @@ export async function createBooking(
       }
     );
 
-  // ==========================
+  
   // LIVE UPDATE
-  // ==========================
+  
   const board =
     await getStaffBoard();
 
@@ -279,9 +279,9 @@ export async function createBooking(
     board
   );
 
-  // ==========================
+
   // RETURN
-  // ==========================
+  
   return {
     booking,
     building:

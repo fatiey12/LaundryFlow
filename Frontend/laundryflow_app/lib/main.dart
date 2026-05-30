@@ -7,7 +7,7 @@ import 'screens/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔥 Restore session BEFORE app starts
+  // Restore session BEFORE app starts
   await ApiService.restoreSession();
 
   runApp(const MyApp());
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      // 🔥 AUTO REDIRECT
+      // AUTO REDIRECT
       home: ApiService.isAuthenticated
     ? const MainScreen()
     : const LoginScreen(),

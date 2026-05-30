@@ -38,17 +38,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // ====================================
+ 
   // LOAD ALL
-  // ====================================
+ 
   void loadAll() async {
     await loadBatches();
     await loadWallet();
   }
 
-  // ====================================
+  
   // LOAD BATCHES
-  // ====================================
+  
   Future<void> loadBatches() async {
     final data =
         await ApiService.getBatches();
@@ -58,9 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // ====================================
+ 
   // LOAD WALLET
-  // ====================================
+  
   Future<void> loadWallet() async {
   try {
     final data =
@@ -92,9 +92,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-  // ====================================
+  
   // COST CALCULATION
-  // ====================================
+ 
   void calculateCost() {
     if (weightController.text.isEmpty) {
       setState(() {
@@ -150,7 +150,7 @@ void showEstimatorPopup() {
             ),
 
             title: const Text(
-              "🧠 Smart Weight Estimator",
+              "Smart Weight Estimator",
             ),
 
             content: SingleChildScrollView(
@@ -368,9 +368,9 @@ void showEstimatorPopup() {
     },
   );
 }
-  // ====================================
+  
   // SOCKET
-  // ====================================
+ 
   void setupSocket() {
     SocketService.connect();
 
@@ -390,7 +390,7 @@ void showEstimatorPopup() {
           context: context,
           builder: (_) => AlertDialog(
             title: const Text(
-              "📢 Admin Update",
+              " Admin Update",
             ),
             content: Text(
               "${data["title"]}\n\n${data["message"]}",
@@ -413,9 +413,9 @@ void showEstimatorPopup() {
     );
   }
 
-  // ====================================
+  
   // TOP UP POPUP
-  // ====================================
+ 
   void showTopUpPopup() {
     final customController =
         TextEditingController();
@@ -511,9 +511,9 @@ void showEstimatorPopup() {
   );
 }
 
-  // ====================================
+  
   // BOOKING
-  // ====================================
+  
   void createBooking(
     String batchId,
   ) async {
@@ -594,7 +594,7 @@ void showEstimatorPopup() {
             children: [
 
               Text(
-                "🧺 Batch $batchId Reserved",
+                "Batch $batchId Reserved",
               ),
 
               const SizedBox(
@@ -602,11 +602,11 @@ void showEstimatorPopup() {
               ),
 
               Text(
-                "💳 Charged: ${pricing["totalCost"]} DH",
+                "Charged: ${pricing["totalCost"]} DH",
               ),
 
               Text(
-                "💰 Balance Left: ${walletBalance.toStringAsFixed(0)} DH",
+                "Balance Left: ${walletBalance.toStringAsFixed(0)} DH",
               ),
 
               const SizedBox(
@@ -618,11 +618,11 @@ void showEstimatorPopup() {
               ),
 
               Text(
-                "⏰ Ready By: ${result["estimatedReadyTime"]}",
+                "Ready By: ${result["estimatedReadyTime"]}",
               ),
 
               Text(
-                "📈 Queue: $prediction",
+                "Queue: $prediction",
               ),
 
               const SizedBox(
@@ -667,9 +667,9 @@ void showEstimatorPopup() {
     }
   }
 
-  // ====================================
+  
   // SNACKBAR
-  // ====================================
+ 
   void snack(
     String text,
   ) {
@@ -684,9 +684,9 @@ void showEstimatorPopup() {
     );
   }
 
-  // ====================================
+  
   // UI
-  // ====================================
+  
   @override
   Widget build(
     BuildContext context,
